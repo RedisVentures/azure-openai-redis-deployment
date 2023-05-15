@@ -113,7 +113,7 @@ query_engine = get_query_engine()
 user_query = st.text_input("Query:", 'What types of variants are available for the Chevrolet Colorado?')
 try:
     response = query_engine.query(user_query)
-except:
-    st.markdown("")
+except Exception as e:
+   response = "Error: %s" % str(e) 
 st.markdown(str(response))
 print(str(response))
