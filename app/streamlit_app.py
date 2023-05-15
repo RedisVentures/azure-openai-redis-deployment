@@ -18,6 +18,12 @@ from llama_index import (
     StorageContext
 )
 
+import sys
+
+import logging
+logging.basicConfig(stream=sys.stdout, level=logging.INFO) # logging.DEBUG for more verbose output
+logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
+
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
 REDIS_PORT = os.getenv("REDIS_PORT", "6379")
 REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", "")
