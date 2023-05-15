@@ -1,0 +1,7 @@
+streamlit
+azure.storage.blob
+PyPDF2
+llama_index==0.6.5
+redis
+langchain
+openai
