@@ -1,0 +1,24 @@
+name: Docker build
+
+on:
+  workflow_dispatch 
+# you can trigger on anything you want
+
+jobs:
+  tf_code_check:
+    name: Terraform Validation
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2.5.0
+    - name: Setup Terraform CLI
+      uses: hashicorp/setup-terraform@v2.0.2
+
+    - name: Terraform init and validate
+      run: |
+        echo `pwd`
+        echo "** Running Terraform Init**"
+        terraform init
+
+        echo "** Running Terraform Validate**"
+        terraform validate
