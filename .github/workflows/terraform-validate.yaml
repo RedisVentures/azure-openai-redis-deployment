@@ -1,8 +1,8 @@
-name: Docker build
+name: Terraform validate
 
 on:
-  workflow_dispatch 
-# you can trigger on anything you want
+  push:
+    branches: [ "main" ]
 
 jobs:
   tf_code_check:
