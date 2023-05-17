@@ -28,10 +28,16 @@ App credits - https://github.com/RedisVentures/LLM-Document-Chat
 
 ## Deploying the app
 
+You need to specify unique name prefix for your deployment either by editing `terraform.tfvars` or in command line:
+
+Also, you can add your own documents to the `./docs` folder (PDF or plain text), so they can be uploaded to the bucket during the deployment.
+
 ```
 terraform init
-terraform apply
+terraform apply -var name_prefix="my-deployment-001-"
 ```
+
+
 It might take up to 20 minutes to provision all the required infrastructure.
 
 At the end terraform script would output bunch of the variables.
@@ -53,7 +59,7 @@ app-url can be used to immediatly access the application.
 
 Use `terraform.tfvars` to override default resource name prefix and container image to deploy with the webapp. You might need to override at least the app prefix to make sure it does not conflict with other instances deployed already.
 
-TODO: introduce account-local random addon to endpoints, so the same defaults can be used on multiple subscriptions.
+TODO: introduce account-local random addon to endpoint names, so the same defaults can be used on multiple subscriptions.
 
 ## Pererequisites and Limitations
 

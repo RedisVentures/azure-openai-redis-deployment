@@ -1,0 +1,14 @@
+name: Docker build
+
+on:
+  workflow_dispatch 
+# you can trigger on anything you want
+
+jobs:
+  build:
+   runs-on: ubuntu-latest
+  
+   steps:
+     - uses: actions/checkout@v2
+     - name: Build Docker image 
+       run: docker build -t samplapp .

@@ -101,8 +101,14 @@ def get_query_engine():
         llm_predictor=llm_predictor,
         embed_model=llm_embedding,
     )
-    storage_context = StorageContext.from_defaults(vector_store=vector_store)
-    index = GPTVectorStoreIndex.from_documents(documents, storage_context=storage_context, service_context=service_context)
+    storage_context = StorageContext.from_defaults(
+        vector_store=vector_store
+    )
+    index = GPTVectorStoreIndex.from_documents(
+        documents, 
+        storage_context=storage_context, 
+        service_context=service_context
+    )
 
 
     return index.as_query_engine()
