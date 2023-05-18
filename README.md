@@ -42,13 +42,13 @@ It might take up to 20 minutes to provision all the required infrastructure.
 
 At the end terraform script would output bunch of the variables.
 ```
-app-url = "anton-tf-webapp.azurewebsites.net"
-openai-endpoint = "https://anton-tf-openai1.openai.azure.com/"
+app-url = "redis-openai-83903-webapp.azurewebsites.net"
+openai-endpoint = "https://redis-openai-83903.openai.azure.com/"
 openai-key = <sensitive>
-redis-endpoint = "anton-tf-redisenterprise.eastus.redisenterprise.cache.azure.net"
+redis-endpoint = "redis-openai-83903-redisenterprise.southcentralus.redisenterprise.cache.azure.net"
 redis-password = <sensitive>
 redis-port = 10000
-storage-account = "antontfbucket"
+storage-account = "redisopenai83903bucket"
 storage-account-connection-string = <sensitive>
 storage-container = "data"
 ```
@@ -57,9 +57,7 @@ app-url can be used to immediatly access the application.
 
 ## Configuration
 
-Use `terraform.tfvars` to override default resource name prefix and container image to deploy with the webapp. You might need to override at least the app prefix to make sure it does not conflict with other instances deployed already.
-
-TODO: introduce account-local random addon to endpoint names, so the same defaults can be used on multiple subscriptions.
+Use `terraform.tfvars` or `terraform apply -var="name_prefix=my-deployment"` to override default resource name prefix and container image to deploy with the webapp. 
 
 ## Pererequisites and Limitations
 
@@ -87,3 +85,7 @@ Building/pushing the multiplatform image (useful for local development on Mac/AR
 ```
 docker buildx build --platform linux/amd64,linux/arm64 -t antonum/llmchat:latest --push  .
 ```
+
+## Troubleshooting
+
+`azurerm_cognitive_account.openai` stuck in `creating` phase. At the time of writing (May 2023) Azure occasionally experiencomg problems deploying OpenAI services. Try deploying the stack in another region. For instance set `azure_region = "southcentralus"` instead of `eastus`. 

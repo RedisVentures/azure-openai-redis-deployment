@@ -1,7 +1,7 @@
 variable "azure_region" {
   description = "Azure region"
   type        = string
-  default     = "eastus"
+  default     = "southcentralus"
 }
 
 variable "name_prefix" {
