@@ -1,6 +1,6 @@
-# Redis Azure OpenAI Template
+# Azure OpenAI Redis Deployment Template
 
-This repo is an example that can be used to "one-click" deploy Azure OpenAI applications, using Redis Enterprise as a vector database.
+ The terraform template automates the end-to-end deployment of Azure OpenAI applications using Redis Enterprise as a vector database.
 
 ![Azure OpenAI Redis](app/assets/diagram.png)
 
@@ -13,34 +13,37 @@ In a single terraform script it deploys:
 
 ## Example application
 
-Example application allows you to use ChatGPT to analyze the documents, previoslyy unknown to ChatGPT and/or internal to your organization.
+An example application used in this repo allows you to use ChatGPT to analyze the documents, previously unknown to ChatGPT and/or internal to your organization.
 
-There are two data flows in the app. First - batch generation of embedding from the document context. Resulted embedding are stored in Azure Redis Enterprise. Second - using these embeddings to generate the context aware prompt to ChatGPT, so it answers questions, based on the context of the internal documents.
+There are two data flows in the app. First - batch generation of embedding from the document context. These embeddings are stored in Azure Redis Enterprise. Second - using these embeddings to generate the context-aware prompt to ChatGPT, so it answers questions, based on the context of the internal documents.
 
 Questions you can try:
 
-- What are the main differences between the three engine types available for the Chevy Colorado? Format response as a table with model as a first column
+- What are the main differences between the three engine types available for the Chevy Colorado? Format the response as a table with the model as a first column
 
-- What  color options are available? Format as a list
+- What color options are available? Format as a list
 
 App credits - https://github.com/RedisVentures/LLM-Document-Chat
 
 
 ## Deploying the app
 
-You need to specify unique name prefix for your deployment either by editing `terraform.tfvars` or in command line:
+Authenticate Azure CLI to your Azure account:
 
-Also, you can add your own documents to the `./docs` folder (PDF or plain text), so they can be uploaded to the bucket during the deployment.
-
+```
+az login
+```
+Deploy terraform configuration:
 ```
 terraform init
-terraform apply -var name_prefix="my-deployment-001-"
+terraform apply
 ```
 
+You can add your own documents to the `./docs` folder (PDF or plain text), so they can be uploaded to the bucket during the deployment.
 
 It might take up to 20 minutes to provision all the required infrastructure.
 
-At the end terraform script would output bunch of the variables.
+At the end terraform script would output a bunch of the variables.
 ```
 app-url = "redis-openai-83903-webapp.azurewebsites.net"
 openai-endpoint = "https://redis-openai-83903.openai.azure.com/"
@@ -53,20 +56,24 @@ storage-account-connection-string = <sensitive>
 storage-container = "data"
 ```
 
-app-url can be used to immediatly access the application.
+app-url can be used to immediately access the application.
 
 ## Configuration
 
-Use `terraform.tfvars` or `terraform apply -var="name_prefix=my-deployment"` to override default resource name prefix and container image to deploy with the webapp. 
+Use `terraform.tfvars` or `terraform apply -var="name_prefix=my-deployment"` to override the default resource name prefix and container image to deploy with the webapp. 
+
+To change the application, deployed as an Azure Web App - change `app_docker_image` and `app_docker_tag` values in the `terraform.tfvars`. The source code for the default application is included in this repo under the `./app` folder.
 
 ## Pererequisites and Limitations
 
-Azure Open AI currently (May 2023) is in the private preview. You need to submit the request to Microsoft to enable it for your account.
+Azure account, Azure CLI, Terraform CLI installed locally.
 
-Azure OpenAI embedding API currently has strict limits on the request frequency, which might make it not feasible for bulk embedding generation. Consider using local embedding such as:
+Azure Open AI currently (May 2023) is in the private preview. You need to [submit the request](https://customervoice.microsoft.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR7en2Ais5pxKtso_Pz4b1_xUOFA5Qk1UWDRBMjg0WFhPMkIzTzhKQ1dWNyQlQCN0PWcu) to Microsoft to enable it for your account.
+
+Azure OpenAI embedding API currently has strict limits on the request frequency, which might make it not feasible for a bulk embedding generation. Consider using local embedding such as:
 ```
-        from langchain.embeddings import HuggingFaceEmbeddings
-        embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+  from langchain.embeddings import HuggingFaceEmbeddings
+  embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 ```
 
 ## Testing locally
@@ -88,4 +95,17 @@ docker buildx build --platform linux/amd64,linux/arm64 -t antonum/llmchat:latest
 
 ## Troubleshooting
 
-`azurerm_cognitive_account.openai` stuck in `creating` phase. At the time of writing (May 2023) Azure occasionally experiencomg problems deploying OpenAI services. Try deploying the stack in another region. For instance set `azure_region = "southcentralus"` instead of `eastus`. 
+- **Problem:** `azurerm_cognitive_account.openai` stuck in `creating` phase. 
+
+At the time of writing (May 2023) Azure occasionally experiencing problems deploying OpenAI services. Try deploying the stack in another region. For instance set `azure_region = "southcentralus"` instead of `eastus`. 
+
+- **Problem**: Deployment fails with an error: `SpecialFeatureOrQuotaIdRequired: The subscription does not have QuotaId/Feature required by SKU 'S0' from kind 'OpenAI'`
+
+Your Azure account does not have Azure OpenAI enabled. At the time of writing (May 2023) Azure OpenAI is in private preview. You need to [submit the request](https://customervoice.microsoft.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR7en2Ais5pxKtso_Pz4b1_xUOFA5Qk1UWDRBMjg0WFhPMkIzTzhKQ1dWNyQlQCN0PWcu) to Microsoft to enable it for your subscription.
+
+## Cleanup
+
+To destroy all the resources deployed run:
+```
+terraform destroy
+```
