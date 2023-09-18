@@ -36,6 +36,8 @@ resource "azurerm_cognitive_deployment" "gen-model" {
   scale {
     type = "Standard"
   }
+    depends_on = [ azurerm_cognitive_account.openai]
+
 }
 resource "azurerm_cognitive_deployment" "embeddings_model" {
   name                 = var.embeddings_model
@@ -49,7 +51,7 @@ resource "azurerm_cognitive_deployment" "embeddings_model" {
   scale {
     type = "Standard"
   }
-  //depends_on = [ azurerm_cognitive_deployment.gen-model ]
+  depends_on = [ azurerm_cognitive_deployment.gen-model,  azurerm_cognitive_account.openai]
 }
 
 resource "azurerm_redis_enterprise_cluster" "redisenterprise" {
