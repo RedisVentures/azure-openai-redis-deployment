@@ -1,6 +1,6 @@
 # Redis Azure OpenAI Template
 
-![Azure OpenAI Redis](https://github.com/antonum/azure-openai-redis-deployment/blob/main/app/assets/diagram-small.png?raw=true)
+![Azure OpenAI Redis](https://github.com/redisventures/azure-openai-redis-deployment/blob/main/app/assets/diagram-small.png?raw=true)
 
 Example application allows you to use ChatGPT to analyze the documents, previoslyy unknown to ChatGPT and/or internal to your organization.
 

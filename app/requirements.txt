@@ -1,7 +1,8 @@
 streamlit
 azure.storage.blob
+pypdf
 PyPDF2
-llama_index==0.6.5
+llama_index==0.8.26
 redis
-langchain
+langchain==0.0.262
 openai

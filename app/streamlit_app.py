@@ -42,6 +42,7 @@ def get_embeddings():
         #using build-in HuggingFace instead
         #from langchain.embeddings import HuggingFaceEmbeddings
         #embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+
         from langchain.embeddings import OpenAIEmbeddings
         embeddings = OpenAIEmbeddings(deployment=OPENAI_EMBEDDINGS_ENGINE, chunk_size=1 )
     else:
@@ -52,8 +53,19 @@ def get_embeddings():
 
 def get_llm():
     if OPENAI_API_TYPE=="azure":
+        openai.api_type = "azure"
+        openai.api_base = os.getenv("OPENAI_API_BASE")
+        openai.api_version = os.getenv("OPENAI_API_VERSION")
+        openai.api_key = os.getenv("OPENAI_API_KEY")
+        text_model_deployment = OPENAI_COMPLETIONS_ENGINE
         from langchain.llms import AzureOpenAI
-        llm=AzureOpenAI(deployment_name=OPENAI_COMPLETIONS_ENGINE)
+        llm = AzureOpenAI(deployment_name=text_model_deployment, model_kwargs={
+            "api_key": openai.api_key,
+            "api_base": openai.api_base,
+            "api_type": openai.api_type,
+            "api_version": openai.api_version,
+        })
+        #llm_predictor = LLMPredictor(llm=llm)
     else:
         from langchain.llms import OpenAI
         llm=OpenAI()
@@ -83,7 +95,7 @@ def get_query_engine():
 
     # load documents
     documents = SimpleDirectoryReader(download_file_path).load_data()
-    print('Document ID:', documents[0].doc_id, 'Document Hash:', documents[0].doc_hash)
+    print('Document ID:', documents[0].doc_id)
 
 
     from llama_index.storage.storage_context import StorageContext
@@ -122,4 +134,4 @@ try:
 except Exception as e:
    response = "Error: %s" % str(e) 
 st.markdown(str(response))
-print(str(response))
+#print(str(response))
