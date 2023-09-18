@@ -25,29 +25,31 @@ resource "azurerm_cognitive_account" "openai" {
   }
 }
 
-resource "azurerm_cognitive_deployment" "text-davinci-003" {
-  name                 = "text-davinci-003"
+resource "azurerm_cognitive_deployment" "gen-model" {
+  name                 = var.generative_model
   cognitive_account_id = azurerm_cognitive_account.openai.id
   model {
     format  = "OpenAI"
-    name    = "text-davinci-003"
-    version = "1"
+    name    = var.generative_model
+    version = var.generative_model_version
   }
   scale {
     type = "Standard"
   }
 }
-resource "azurerm_cognitive_deployment" "text-embedding-ada-002" {
-  name                 = "text-embedding-ada-002"
+resource "azurerm_cognitive_deployment" "embeddings_model" {
+  name                 = var.embeddings_model
   cognitive_account_id = azurerm_cognitive_account.openai.id
   model {
     format  = "OpenAI"
-    name    = "text-embedding-ada-002"
-    version = "2"
+    name    = var.embeddings_model
+    version = var.embeddings_model_version
+
   }
   scale {
     type = "Standard"
   }
+  //depends_on = [ azurerm_cognitive_deployment.gen-model ]
 }
 
 resource "azurerm_redis_enterprise_cluster" "redisenterprise" {
@@ -114,10 +116,10 @@ resource "azurerm_linux_web_app" "app" {
   app_settings = {
     OPENAI_API_KEY            = azurerm_cognitive_account.openai.primary_access_key
     OPENAI_API_BASE           = azurerm_cognitive_account.openai.endpoint
-    OPENAI_COMPLETIONS_ENGINE = "text-davinci-003"
-    OPENAI_EMBEDDINGS_ENGINE  = "text-embedding-ada-002"
+    OPENAI_COMPLETIONS_ENGINE = var.generative_model
+    OPENAI_EMBEDDINGS_ENGINE  = var.embeddings_model
     OPENAI_API_TYPE           = "azure"
-    OPENAI_API_VERSION        = "2022-12-01"
+    OPENAI_API_VERSION        = "2023-05-15"
     REDIS_HOST                = azurerm_redis_enterprise_cluster.redisenterprise.hostname
     REDIS_PORT                = azurerm_redis_enterprise_database.redis-db.port
     REDIS_PASSWORD            = azurerm_redis_enterprise_database.redis-db.primary_access_key
